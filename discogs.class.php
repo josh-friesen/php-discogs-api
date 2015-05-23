@@ -1,28 +1,39 @@
 <?php
+/**
+* discogs.com API Class
+* Query the discogs API for information
+*
+* @author	Josh F.
+*/
 class discogsNFO {
 
 	private $apiKey = '';
 	private $releaseUrl = '?f=xml&api_key=%k';
 	private $searchUrl =  'http://www.discogs.com/search?type=all&q=%s&f=xml&api_key=%k';
-	private $albumArtDir = '/';
 
+  /**
+	* class construct
+	* Establishes API key or returns false
+	*
+	* @return boolean
+	*/
 	public function __construct() {
 
 		if (!isset($this->apikey) || $this->apikey = '') return false;
 			else return true;
 	}
 
+	/**
+	* getImages
+	* Retrieves image information from discogs release object
+	*
+	* @return object
+	*/
 	public function getImages ($RIN) {
 
 		if (!isset($RIN)) throw new Exception('RIN not set.');
 
 		$res = $this->getRelease($RIN);
-
-		if (isset($_GET['debug'])) {
-			echo '<pre>';
-			var_dump($res);
-			echo '</pre>';
-		}
 
 		if ($res) {
 
@@ -33,15 +44,18 @@ class discogsNFO {
 				} else $ret = $images['uri150'];
 
 				if ($ret) {
-					$retc = $this->copyAlbumArt($ret);
-					if ($retc) return $retc;
-						else return false;
-				} else return false;
-
+						return $retc;
+					} else return false;
 		} else return false;
 
 	}
 
+	/**
+	* getRelease
+	* Retrieves album release information
+	*
+	* @return object
+	*/
 	private function getRelease($RIN) {
 
 		$res = $this->getReleaseNum($RIN);
@@ -61,6 +75,12 @@ class discogsNFO {
 		} else throw new Exception('Not found.');
 	}
 
+	/**
+	* getReleaseNum
+	* Retrieves release number from provided release identifier
+	*
+	* @return string
+	*/
 	private function getReleaseNum ($RIN) {
 
 		if (!isset($RIN)) throw new Exception('RIN not specified.');
@@ -80,6 +100,12 @@ class discogsNFO {
 
 	}
 
+	/**
+	* getReleaseNumFromData
+	* Extracts release number from release object
+	*
+	* @return string
+	*/
 	private function getReleaseNumFromData ($data) {
 
 		if (!isset($data)) throw new Exception('Did not get data from gRN method.');
@@ -87,8 +113,6 @@ class discogsNFO {
 		$xmlObject = new SimpleXMLElement($data);
 
 		if ($xmlObject && isset($xmlObject->searchresults->result->uri)) {
-
-			//var_dump($xmlObject);
 
 			$uri = $xmlObject->searchresults->result->uri;
 
@@ -99,6 +123,12 @@ class discogsNFO {
 
 	}
 
+	/**
+	* pingDiscogs
+	* Makes connection to discogs.com API using cURL
+	*
+	* @return buffer
+	*/
 	private function pingDiscogs ($url) {
 
 		if (isset($url)) {
@@ -111,29 +141,10 @@ class discogsNFO {
 			$buffer = curl_exec($curl_handle);
 			curl_close($curl_handle);
 
-			// $buffer = file_get_contents($url);
-
 			if ($buffer) return $buffer;
 				else throw new Exception('Discogs API connection error.');
 
 		} else throw new Exception('Discogs URL not set.');
-	}
-
-	private function copyAlbumArt($url) {
-
-		if (!isset($url)) throw new Exception('No URL passed to copy.');
-
-		$baseDir = $this->albumArtDir;
-		$fileName = md5(time().$url).'.jpg';
-
-		$dest = $baseDir.$fileName;
-
-		$res = copy($url, $dest);
-
-		$newUrl = $fileName;
-
-		if ($res) return $newUrl;
-			else throw new Exception ('Could not copy.');
 	}
 
 }
