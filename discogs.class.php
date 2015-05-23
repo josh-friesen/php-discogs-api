@@ -3,25 +3,24 @@
 * discogs.com API Class
 * Query the discogs API for information
 *
-* @author	Josh F.
+* @author Josh F.
 */
 class discogsNFO {
 
-	private $apiKey = '';
-	private $releaseUrl = '?f=xml&api_key=%k';
-	private $searchUrl =  'http://www.discogs.com/search?type=all&q=%s&f=xml&api_key=%k';
+		private $apiKey = '';
+		private $releaseUrl = '?f=xml&api_key=%k';
+		private $searchUrl =  'http://www.discogs.com/search?type=all&q=%s&f=xml&api_key=%k';
 
-  /**
-	* class construct
-	* Establishes API key or returns false
-	*
-	* @return boolean
-	*/
-	public function __construct() {
-
-		if (!isset($this->apikey) || $this->apikey = '') return false;
-			else return true;
-	}
+		/**
+		* class construct
+		* Establishes API key or returns false
+		*
+		* @return boolean
+		*/
+		public function __construct() {
+			if (!isset($this->apikey) || $this->apikey = '') return false;
+				else return true;
+		}
 
 	/**
 	* getImages
@@ -30,22 +29,21 @@ class discogsNFO {
 	* @return object
 	*/
 	public function getImages ($RIN) {
-
 		if (!isset($RIN)) throw new Exception('RIN not set.');
 
 		$res = $this->getRelease($RIN);
 
 		if ($res) {
 
-				$images = $res->release->images->image;
+			$images = $res->release->images->image;
 
-				if (is_array($images) && count($images) > 1) {
-					$ret =  $images[0]['uri150'];
-				} else $ret = $images['uri150'];
+			if (is_array($images) && count($images) > 1) {
+				$ret =  $images[0]['uri150'];
+			} else $ret = $images['uri150'];
 
-				if ($ret) {
-						return $retc;
-					} else return false;
+			if ($ret) {
+				return $retc;
+			} else return false;
 		} else return false;
 
 	}
@@ -72,7 +70,7 @@ class discogsNFO {
 
 			return $xmlObject;
 
-		} else throw new Exception('Not found.');
+		}	else throw new Exception('Not found.');
 	}
 
 	/**
@@ -148,5 +146,4 @@ class discogsNFO {
 	}
 
 }
-
 ?>
